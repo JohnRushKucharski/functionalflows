@@ -30,6 +30,7 @@ scoring_pattern = [
     0,
     1,
 ]
+success_pattern = false
 
 [components.november_pulse_flow]
 characteristics = [
@@ -58,3 +59,30 @@ scoring_pattern = [
     1,
     1,
 ]
+success_pattern = true
+
+[components.bankfull_flow]
+characteristics = [
+    "magnitude",
+    "frequency",
+]
+parameters = [
+    [
+        1,
+        9.651,
+        ">",
+    ],
+    [
+        1,
+        5,
+        [
+            1,
+        ],
+        ">",
+    ],
+]
+scoring_pattern = [
+    "*",
+    1,
+]
+success_pattern = true

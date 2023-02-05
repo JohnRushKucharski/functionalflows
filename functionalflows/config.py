@@ -5,8 +5,8 @@ import numpy as np
 
 from functionalflows.model.data import Input
 from functionalflows.model.analysis import Analysis
-from functionalflows.model.component import Component
 from functionalflows.model.characteristic import factory
+from functionalflows.model.component import Component, ScoringCriteria
 
 def build_components(data: Dict[str, Any]):
     components = []
@@ -18,7 +18,8 @@ def build_component(name: str, data: Dict[str, List[Any]]) -> Component:
     characteristics = {}
     for i in range(0, len(data['characteristics'])):
         characteristics[data['characteristics'][i]] = factory(data['characteristics'][i], data['parameters'][i]) 
-    return Component(name, characteristics, np.array(data['scoring_pattern'], dtype=np.int32))
+    print(f'name: {name}, characteristics: {characteristics}, data: {data["scoring_pattern"]}, success: {data["success_pattern"]}')
+    return Component(name, characteristics, ScoringCriteria(data['scoring_pattern'], data['success_pattern']))
 
 def read_config_file(path: str) -> List[Component]:
     with open(path, 'rb') as f:

@@ -31,6 +31,8 @@ def factory(name: str, params: List[Any]) -> Callable[[Input, np.ndarray, int], 
             return duration(params[0], params[1], params[2])
         case 'rate_of_change':
             return rate_of_change(params[0], params[1], params[2])
+        case 'frequency':
+            return frequency(params[0], params[1], params[2], params[3])
         case _:
             raise NotImplementedError(f'The {name} characteristic is not implemented, in the characteristic factory method.')
 
@@ -67,19 +69,6 @@ def duration(nperiods: int = 1, row_pattern: np.ndarray = None, symbol: str = ">
                 n = 0
         return out
     return evaluate
-    
-    # def evaluate(data: Input, outputs: np.ndarray, order=3) -> np.ndarray:
-    #     n, rows = 0, len(data.flows)
-    #     out = np.zeros(rows, dtype=np.int32)
-    #     for i in range(0, len(out)):
-    #         if outputs[i,:].sum() == order:
-    #             n += 1
-    #         else:
-    #             if n > nperiods:
-    #                 out[i-n:i] = 1
-    #             n = 0
-    #     return out
-    # return evaluate
 
 def rate_of_change(ma_nperiods: int = 1, threshold_factor: float = 2, symbol: str = '>'):
     _operator = match_symbol(symbol)
@@ -96,3 +85,25 @@ def rate_of_change(ma_nperiods: int = 1, threshold_factor: float = 2, symbol: st
             out[i] = 1 if _operator(change, threshold_factor) else 0
         return out
     return evaluate
+
+def frequency(n_times: int, n_years: int, row_pattern: np.ndarray, symbol: str = '>'):
+    _operator = match_symbol(symbol)
+    def evaluate(data: Input, outputs: np.ndarray, order=2) -> np.ndarray:
+        T, n, yrs = len(data.flows), 0, []
+        # count number of occurances each year
+        for i in range(0, T):            
+            if data.dsowy[i] == 1 or i == T-1:
+                yrs.append(n)
+                n = 0
+            if np.array_equal(outputs[i,:order-1], row_pattern):
+                n += 1
+        # count rolling sum of ntimes per nyear period, if n_times < ntimes then 1 o/w 0.
+        out_yrs = np.where(pd.Series(np.array(yrs, dtype=np.int32)).rolling(n_years, min_periods=1).sum() < n_times, 0, 1)
+        # if criteria was met for year then fill in ones for each day in year, otherwise 0.
+        t, out = 0, np.zeros(len(data.flows), dtype=np.int32)
+        for i in range(0, len(out)):
+            if data.dsowy[i] == 1:
+                t += 1
+            out[i] = out_yrs[t]
+        return out
+    return evaluate            

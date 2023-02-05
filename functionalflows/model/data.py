@@ -40,7 +40,7 @@ class Output:
         output = {}
         for i in range(0, len(self.characteristic_names)):
             output[f'{self.component_name}_{self.characteristic_names[i]}'] = self.data[:, i]
-        output[self.component_name] = self.data[:,i+1] #self.vulnerability()
+        #output[self.component_name] = self.data[:,i] #self.vulnerability()
         return pd.DataFrame.from_dict(output)
         
     # def vulnerability(self):
