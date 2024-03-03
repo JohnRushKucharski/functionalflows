@@ -1,5 +1,3 @@
-import pandas as pd
-
 from dataclasses import dataclass
 from typing import List
 
@@ -10,7 +8,7 @@ from functionalflows.model.component import Component
 class Analysis:
     data: Input
     components: List[Component]
-    
+
     def run(self, output_path: str = ''):
         outputs = []
         for component in self.components:
@@ -19,6 +17,5 @@ class Analysis:
             df = self.data.to_df(reset_index=True)
             for output in outputs:
                 df = df.join(output.to_df())
-            df.to_csv(output_path)  
+            df.to_csv(output_path)
         return outputs
-            

@@ -1,6 +1,7 @@
+import tomllib
 from typing import List, Dict, Any
 
-import tomli
+#import tomli
 import numpy as np
 
 from functionalflows.model.data import Input
@@ -23,7 +24,8 @@ def build_component(name: str, data: Dict[str, List[Any]]) -> Component:
 
 def read_config_file(path: str) -> List[Component]:
     with open(path, 'rb') as f:
-        data = tomli.load(f)
+        data = tomllib.load(f)
+        #data = tomli.load(f)
     return data   
 
 def setup(config_filepath: str, input_filepath: str) -> Analysis:
