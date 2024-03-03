@@ -220,3 +220,4 @@ def frequency(n_times: int, n_years: int,
             out[i] = out_yrs[t]
         return out
     return evaluate
+
